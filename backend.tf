@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.11.1"
+  required_version = ">= 1.5.7"
   backend "s3" {
     bucket         = "mrtonero-statefile"
     key            = "terraform.tfstate"
