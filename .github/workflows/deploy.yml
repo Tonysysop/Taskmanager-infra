@@ -27,3 +27,12 @@ jobs:
 
       - name: Setup and Verify aws Credentials
         run: aws sts get-caller-identity
+
+      
+      ############################################
+
+      - name: Run TFLint
+        uses: terraform-linters/setup-tflint@v2
+      - run: |
+            tflint --init
+            tflint
