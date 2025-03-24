@@ -36,3 +36,14 @@ jobs:
       - run: |
             tflint --init
             tflint
+      
+
+      - name: Initiliazing Terraform
+        run: |
+          terraform init -input=false
+          terraform version
+          terraform providers
+
+      - name: Validating Terraform Code
+        run: terraform validate
+        
