@@ -1,0 +1,39 @@
+name: Terraform s3 Destruction
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Terraform_Destroy:
+    runs-on: ubuntu-latest
+    env:
+      TF_LOG: DEBUG
+      TF_LOG_PATH: terraform.log
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.11.1
+
+      - name: Testing Aws Credentials
+        run: aws sts get-caller-identity
+
+      - name: initialize terraform
+        run: |
+          terraform init -input=false
+          terraform vsersion
+          terraform providers 
+
+      - name: terraform destroy
+        run: terraform destroy --auto-approve
+    
+  
