@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Terraform_Destroy:
+  TerraformDestroy:
     runs-on: ubuntu-latest
     env:
       TF_LOG: DEBUG
@@ -24,8 +24,17 @@ jobs:
           terraform_wrapper: false
           terraform_version: 1.5.7
 
-      - name: Testing Aws Credentials
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Testing AWS Credential
         run: aws sts get-caller-identity
+
+          
 
       - name: initialize terraform
         run: |
