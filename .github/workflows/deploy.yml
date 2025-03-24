@@ -1,0 +1,77 @@
+name: Terraform Deployment
+on:
+  push:
+    branches: 
+      - infra-setup
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    env:
+      TF_LOG: DEBUG
+      TF_LOG_PATH: terraform.log
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.5.7
+
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Testing AWS Credential
+        run: aws sts get-caller-identity
+      
+      ############################################
+
+      - name: Run TFLint
+        uses: terraform-linters/setup-tflint@v2
+      - run: |
+            tflint --init
+            tflint
+      
+
+      - name: Initiliazing Terraform
+        run: |
+          terraform init -input=false
+          terraform version
+          terraform providers
+
+      - name: Validating Terraform Code
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload tfplan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ./tfplan
+
+      - name: Apply infrastructure Code
+        run: terraform apply --auto-approve
+
+      - name: Write Output to file
+        run: | 
+            terraform output > output.txt
+            test -f output.txt && echo "output.txt exist" || echo "output.txt doesnt exist"
+      
+      - name: Save output.txt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: output.txt
+          path: ./output.txt
