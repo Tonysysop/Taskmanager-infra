@@ -23,7 +23,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-          terraform_version: 1.11.1
+          terraform_version: 1.5.7
 
       - name: Setup and Verify aws Credentials
         run: aws sts get-caller-identity

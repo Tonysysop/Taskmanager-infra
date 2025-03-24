@@ -22,7 +22,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-          terraform_version: 1.11.1
+          terraform_version: 1.5.7
 
       - name: Testing Aws Credentials
         run: aws sts get-caller-identity
@@ -30,7 +30,7 @@ jobs:
       - name: initialize terraform
         run: |
           terraform init -input=false
-          terraform vsersion
+          terraform version
           terraform providers 
 
       - name: terraform destroy
