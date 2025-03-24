@@ -1,0 +1,29 @@
+name: Terraform s3 Deployment
+on:
+  push:
+    branches: 
+      - infra-setup
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    env:
+      TF_LOG: DEBUG
+      TF_LOG_PATH: terraform.log
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.11.1
+
+      - name: Setup and Verify aws Credentials
+        run: aws stst get-caller-identity
