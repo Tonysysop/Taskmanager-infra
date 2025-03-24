@@ -26,4 +26,4 @@ jobs:
           terraform_version: 1.11.1
 
       - name: Setup and Verify aws Credentials
-        run: aws stst get-caller-identity
+        run: aws sts get-caller-identity
