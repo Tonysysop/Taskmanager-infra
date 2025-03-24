@@ -46,4 +46,26 @@ jobs:
 
       - name: Validating Terraform Code
         run: terraform validate
-        
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload tfplan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ./tfplan
+
+      - name: Apply infrastructure Code
+        run: terraform apply --auto-approve
+
+      - name: Write Output to file
+        run: | 
+            terraform output > output.txt
+            test -f output.txt && echo "output.txt exist" || echo "output.txt doesnt exist"
+      
+      - name: Save output.txt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: output.txt
+          path: ./output.txt
