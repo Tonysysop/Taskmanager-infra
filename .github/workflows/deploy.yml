@@ -59,7 +59,8 @@ jobs:
         run: | 
             terraform apply --auto-approve
             BUCKET_NAME=$(terraform output -raw bucket_name)
-            echo $BUCKET_NAME
+            echo "BUCKET_NAME=$BUCKET_NAME" >> GITHUB_ENV
+            echo "Extracted_bucket_name: $BUCKET_NAME"
 
 
       - name: Write Output to file
