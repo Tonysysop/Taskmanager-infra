@@ -74,11 +74,31 @@ jobs:
           name: output.txt
           path: ./output.txt
 
+
       - name: Update Repository Variable in App repo
         run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
-          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+            curl -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+            https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
+            -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+
+
+
+
+
+
+
+
+
+      
+
+      #Use this when you want to create the verrible in the app repo#
+      # - name: Update Repository Variable in App repo
+      #   run: |
+      #     curl -X POST \
+      #     -H "Accept: application/vnd.github+json" \
+      #     -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+      #     https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
+      #     -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
 

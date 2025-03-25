@@ -4,6 +4,7 @@ resource "aws_s3_bucket" "React_bucket" {
   tags = {
     Name = "TinuTaskManager_bucket"
   }
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_website_configuration" "React_Bucket_website_confg" {
