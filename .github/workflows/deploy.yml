@@ -76,8 +76,9 @@ jobs:
 
       - name: Update Repository Variable in App repo
         run: |
-          curl -X PATCH \
+          curl -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
-          -d '{"value": "'"$BUCKET_NAME"'"}'
+          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
+          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+
