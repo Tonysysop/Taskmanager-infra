@@ -2,18 +2,11 @@ name: Terraform Deployment
 on:
   push:
     branches: 
-      - infra-setup
+      - main
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest
-    env:
-      TF_LOG: DEBUG
-      TF_LOG_PATH: terraform.log
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-
+    runs-on: ubuntu-lates
     
     steps:
       - name: Checkout Code
@@ -63,7 +56,11 @@ jobs:
           path: ./tfplan
 
       - name: Apply infrastructure Code
-        run: terraform apply --auto-approve
+        run: | 
+            terraform apply --auto-approve
+            BUCKET_NAME=${terraform output -raw bucket_name}
+            echo $BUCKET_NAME
+
 
       - name: Write Output to file
         run: | 
@@ -75,3 +72,11 @@ jobs:
         with:
           name: output.txt
           path: ./output.txt
+
+      - name: Update Repository Variable in App repo
+        run: |
+          curl -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
+          -d '{"value": "'"$BUCKET_NAME"'"}'
