@@ -58,7 +58,7 @@ jobs:
       - name: Apply infrastructure Code
         run: | 
             terraform apply --auto-approve
-            BUCKET_NAME=${terraform output -raw bucket_name}
+            BUCKET_NAME=$(terraform output -raw bucket_name)
             echo $BUCKET_NAME
 
 
