@@ -75,13 +75,40 @@ jobs:
           path: ./output.txt
 
 
-      - name: Update Repository Variable in App repo
+
+
+      - name: Check and Update Repository Variable
         run: |
-            curl -X PATCH \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-            https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
-            -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+          VAR_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME)
+
+          if [ "$VAR_EXISTS" -eq 200 ]; then
+            echo "🔄 Variable exists, updating with PATCH..."
+          curl -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
+          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+          else
+            echo "🆕 Variable does not exist, creating with POST..."
+          curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
+          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+          fi
+
+
+
+      # - name: Update Repository Variable in App repo
+      #   run: |
+      #       curl -X PATCH \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+      #       https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
+      #       -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
 
 
 
