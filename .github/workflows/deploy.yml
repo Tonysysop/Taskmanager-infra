@@ -101,6 +101,36 @@ jobs:
           fi
 
 
+      - name: Trigger Build Workflow via Webhook
+        run: |
+          curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/dispatches \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          -d '{"event_type": "terraform-completed"}'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       # - name: Update Repository Variable in App repo
       #   run: |
