@@ -105,7 +105,7 @@ jobs:
         run: |
           curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/dispatches \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.WEBHOOK_PAT }}" \
           -d '{"event_type": "terraform-completed"}'
 
 
