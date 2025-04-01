@@ -101,12 +101,13 @@ jobs:
           fi
 
 
-      - name: Trigger Build Workflow via Webhook
+      - name: Trigger Build.yml Workflow via Webhook
         run: |
-          curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/dispatches \
+          curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/actions/workflows/build.yml/dispatches \
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.WEBHOOK_PAT }}" \
-          -d '{"event_type": "terraform-completed"}'
+          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOEKN }}" \
+          -d '{"ref":"main"}'
+
 
 
 
