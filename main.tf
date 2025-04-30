@@ -13,7 +13,7 @@ resource "aws_s3_bucket_website_configuration" "React_Bucket_website_confg" {
     suffix = "index.html"
   }
   error_document {
-    key = "error.html"
+    key = "index.html"
   }
 }
 
