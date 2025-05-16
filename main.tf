@@ -19,10 +19,10 @@ resource "aws_s3_bucket_website_configuration" "React_Bucket_website_confg" {
 
 resource "aws_s3_bucket_public_access_block" "React_bucket_Acl" {
   bucket = aws_s3_bucket.React_bucket.id
-  block_public_acls = false
-  block_public_policy = false
-  ignore_public_acls = false
-  restrict_public_buckets = false
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
 }
 
 
@@ -30,8 +30,24 @@ resource "aws_s3_bucket_public_access_block" "React_bucket_Acl" {
 
 resource "aws_s3_bucket_policy" "React_bucket_policy" {
   bucket = var.bucket_name
-  policy = templatefile("./bucket_policy.json",{
-    bucket_name=aws_s3_bucket.React_bucket.id
+  policy = templatefile("./bucket_policy.json", {
+    bucket_name     = aws_s3_bucket.React_bucket.id
+    account_id      = data.aws_caller_identity.current.account_id
+    distribution_id = aws_cloudfront_distribution.s3_distribution.id
   })
-  depends_on = [ aws_s3_bucket_public_access_block.React_bucket_Acl ]
+  depends_on = [aws_s3_bucket_public_access_block.React_bucket_Acl]
+}
+
+
+
+data "aws_caller_identity" "current" {}
+
+resource "terraform_data" "always_invalidate_cloudfront" {
+  # This triggers the resource to always replace by using a random ID
+  triggers_replace = timestamp()
+
+  provisioner "local-exec" {
+    command     = "aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.s3_distribution.id} --paths /*"
+    interpreter = ["cmd", "/C"]
+  }
 }

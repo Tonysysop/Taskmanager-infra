@@ -7,3 +7,10 @@ output "Website_url" {
 output "bucket_name" {
   value = aws_s3_bucket.React_bucket.bucket
 }
+
+
+
+output "cloudfront_url" {
+  value = aws_cloudfront_distribution.s3_distribution.domain_name
+  description = "The CloudFront distribution domain name"
+}
