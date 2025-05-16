@@ -48,6 +48,6 @@ resource "terraform_data" "always_invalidate_cloudfront" {
 
   provisioner "local-exec" {
     command     = "aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.s3_distribution.id} --paths /*"
-    interpreter = ["cmd", "/C"]
+    
   }
 }
