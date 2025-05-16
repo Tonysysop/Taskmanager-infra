@@ -101,17 +101,24 @@ jobs:
           fi
 
 
-      - name: Trigger Build.yml Workflow via Webhook
+      # - name: Trigger Build.yml Workflow via Webhook
+      #   run: |
+      #     curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/actions/workflows/build.yml/dispatches \
+      #     -H "Accept: application/vnd.github+json" \
+      #     -H "Authorization: Bearer ${{ secrets.WEBHOOK_PAT }}" \
+      #     -d '{"ref":"main"}'
+
+
+
+
+      - name: Trigger Build.yml Workflow via Webhook (debug)
         run: |
-          curl -X POST https://api.github.com/repos/Tonysysop/TaskManager/actions/workflows/build.yml/dispatches \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.WEBHOOK_PAT }}" \
-          -d '{"ref":"main"}'
-
-
-
-
-
+          set -x
+          curl -i -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.WEBHOOK_PAT }}" \
+            https://api.github.com/repos/Tonysysop/TaskManager/actions/workflows/build.yml/dispatches \
+            -d '{"ref":"main"}'
 
 
 
