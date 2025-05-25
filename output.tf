@@ -14,3 +14,7 @@ output "cloudfront_url" {
   value = aws_cloudfront_distribution.s3_distribution.domain_name
   description = "The CloudFront distribution domain name"
 }
+
+output "Cloudfront_id" {
+  value = aws_cloudfront_distribution.s3_distribution.id
+}
