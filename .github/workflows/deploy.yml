@@ -59,8 +59,13 @@ jobs:
         run: | 
             terraform apply --auto-approve
             BUCKET_NAME=$(terraform output -raw bucket_name)
+            CLOUDFRONT_ID=$(terraform output -raw Cloudfront_id)
             echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
+            echo "CLOUDFRONT_ID=$CLOUDFRONT_ID" >> $GITHUB_ENV
             echo "Extracted_bucket_name: $BUCKET_NAME"
+            echo "Extracted_Cloudfront_id: $CLOUDFRONT_ID"
+
+
 
 
       - name: Write Output to file
@@ -76,29 +81,57 @@ jobs:
 
 
 
+      
+      # - name: Check and Update Repository Variable
+      #   run: |
+      #     VAR_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
+      #     -H "Accept: application/vnd.github+json" \
+      #     -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+      #     https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME)
 
-      - name: Check and Update Repository Variable
+      #     if [ "$VAR_EXISTS" -eq 200 ]; then
+      #       echo "🔄 Variable exists, updating with PATCH..."
+      #     curl -X PATCH \
+      #     -H "Accept: application/vnd.github+json" \
+      #     -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+      #     https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
+      #     -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+      #     else
+      #       echo "🆕 Variable does not exist, creating with POST..."
+      #     curl -X POST \
+      #     -H "Accept: application/vnd.github+json" \
+      #     -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+      #     https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
+      #     -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
+      #     fi
+
+      - name: Check and Update Repository Variables
         run: |
-          VAR_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME)
+          for VAR_NAME in BUCKET_NAME CLOUDFRONT_ID; do
+            VALUE=$(eval echo \$$VAR_NAME)
 
-          if [ "$VAR_EXISTS" -eq 200 ]; then
-            echo "🔄 Variable exists, updating with PATCH..."
-          curl -X PATCH \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/BUCKET_NAME \
-          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
-          else
-            echo "🆕 Variable does not exist, creating with POST..."
-          curl -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
-          -d '{"name": "BUCKET_NAME", "value": "'"$BUCKET_NAME"'"}'
-          fi
+            VAR_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+              https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/$VAR_NAME)
+
+            if [ "$VAR_EXISTS" -eq 200 ]; then
+              echo "🔄 $VAR_NAME exists, updating..."
+              curl -X PATCH \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+                https://api.github.com/repos/Tonysysop/TaskManager/actions/variables/$VAR_NAME \
+                -d '{"name": "'"$VAR_NAME"'", "value": "'"$VALUE"'"}'
+            else
+              echo "🆕 $VAR_NAME does not exist, creating..."
+              curl -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+                https://api.github.com/repos/Tonysysop/TaskManager/actions/variables \
+                -d '{"name": "'"$VAR_NAME"'", "value": "'"$VALUE"'"}'
+            fi
+          done
+
 
 
       # - name: Trigger Build.yml Workflow via Webhook
