@@ -40,16 +40,25 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       }
     }
 
-
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
   }
 
+  custom_error_response {
+    error_code            = 403
+    response_page_path    = "/index.html"
+    response_code         = 200
+    error_caching_min_ttl = 60
+  }
 
-
+  custom_error_response {
+    error_code            = 404
+    response_page_path    = "/index.html"
+    response_code         = 200
+    error_caching_min_ttl = 60
+  }
 
   price_class = "PriceClass_200"
 
@@ -68,7 +77,10 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     cloudfront_default_certificate = true
   }
 
+
+
   #retain_on_delete = true
 }
+
 
 
